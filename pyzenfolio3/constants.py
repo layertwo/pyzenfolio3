@@ -1,15 +1,6 @@
-from __future__ import print_function, unicode_literals
-
-
-API_VERSION = '1.7'
-API_ENDPOINT_FORMAT = 'https://api.zenfolio.com/api/{0}/zfapi.asmx'
+API_VERSION = '1.8'
+API_ENDPOINT_FORMAT = 'https://api.zenfolio.com/api/{}/zfapi.asmx'
 API_ENDPOINT = API_ENDPOINT_FORMAT.format(API_VERSION)
-DEFAULT_CONFIG = {}
-REQUEST_HEADERS = {
-    'Content-Type': 'application/json',
-}
-
-DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 PROFILE_RESOLUTIONS = {
     50: (120, 120),

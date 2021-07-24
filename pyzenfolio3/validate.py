@@ -1,6 +1,4 @@
-from __future__ import print_function, unicode_literals
-
-from .exceptions import APIError
+from pyzenfolio3.exceptions import APIError
 
 
 VALID_ENUM = {
@@ -133,25 +131,21 @@ VALID_OBJECTS = {
 
 def assert_type(value, expected_type, param, method):
     if value['$type'] != expected_type:
-        raise APIError('Got `{0}` instead of `{1}` value for `{2}` for `{3}` method.'
-                       ''.format(value['$type'], expected_type, param, method))
+        raise APIError(f"Got `{value['$type']}` instead of `{expected_type}` value for `{param}` for `{method}` method.")
 
 
 def validate_value(value, data_struct, method):
     if value not in VALID_ENUM[data_struct]:
-        raise APIError('`{0}` is an invalid value for `{1}` enumeration for `{2}` method.'
-                       ''.format(value, data_struct, method))
+        raise APIError(f"`{value}` is an invalid value for `{data_struct}` enumeration for `{method}` method.")
 
 
 def validate_object(value, data_struct, method):
     if not isinstance(value, dict):
-        raise APIError('`{0}` must be a dict for `{1}` method.'
-                       ''.format(data_struct, method))
+        raise APIError(f"`{data_struct}` must be a dict for `{method}` method.'")
 
     for k, v in value.items():
         if k not in VALID_OBJECTS[data_struct]:
-            raise APIError('`{0}` is an invalid key for `{1}` object for `{2}` method.'
-                           ''.format(value, data_struct, method))
+            raise APIError(f"`{value}` is an invalid key for `{data_struct}` object for `{method}` method.")
         enum = VALID_OBJECTS[data_struct][k]
         if enum is not None:
             validate_value(v, enum, method)
