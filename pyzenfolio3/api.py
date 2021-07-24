@@ -4,8 +4,8 @@ import os
 import urllib.request
 import urllib.parse
 import urllib.error
-from hashlib import sha256
-from random import randint
+import hashlib
+import secrets
 from datetime import datetime
 
 import requests
@@ -41,8 +41,8 @@ class PyZenfolio:
         salt = bytearray(_challenge.get('PasswordSalt', ''))
         challenge = bytearray(_challenge.get('Challenge', ''))
 
-        password_hash = sha256(salt + password.encode('utf-8')).digest()
-        proof_as_ints = list(sha256(challenge + password_hash).digest())
+        password_hash = hashlib.sha256(salt + password.encode('utf-8')).digest()
+        proof_as_ints = list(hashlib.sha256(challenge + password_hash).digest())
 
         token = self._make_request('Authenticate', [_challenge.get('Challenge', ''),
                                                     proof_as_ints])
@@ -386,7 +386,7 @@ class PyZenfolio:
 
         data = {'method': method,
                 'params': params,
-                'id': randint(0, 2 ** 16 - 1)}
+                'id': secrets.randbelow(0, 2 ** 16 - 1)}
 
         try:
             request = self.session.post(self.api_endpoint,
