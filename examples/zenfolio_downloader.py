@@ -29,6 +29,7 @@ class ZenfolioDownloader(PyZenfolio):
                 sets = self.recurse_photo_sets(e.get("Elements", []))
                 if sets:
                     photosets.extend(sets)
+
         return photosets
 
     def get_photo_set_details(self, _id=None) -> List[dict]:
@@ -53,9 +54,7 @@ class ZenfolioDownloader(PyZenfolio):
             directory = d["Title"].strip()
             for p in d.get("photos", []):
                 if p.get("$type", "") == "Photo":
-                    self.download_photo_from_url(
-                        directory, p["OriginalUrl"], p["FileName"]
-                    )
+                    self.download_photo_from_url(directory, p["OriginalUrl"], p["FileName"])
                 else:
                     print(f'unexpected type in PhotoSet, $type = {p["$type"]}')
 
@@ -68,12 +67,13 @@ class ZenfolioDownloader(PyZenfolio):
 
         if not os.path.exists(path):
             print(f"downloading file {filename} / {directory} from {url}")
-            r = self.session.get(url)
+            r = self.session.get(url, timeout=10)
             if r.ok:
                 print(f"saving file {filename} / {directory} to {path}")
                 with open(path, "wb") as fp:
                     fp.write(r.content)
-            # TODO else if r != OK
+            else:
+                print(f"unable to download file {filename} / {directory} from {url}, timeout 10s")
         else:
             print(f"{filename} / {directory} already exists at {path}")
 
