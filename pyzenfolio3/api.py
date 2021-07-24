@@ -15,7 +15,7 @@ from pyzenfolio.constants import (
     DEFAULT_OBJECTS,
 )
 from pyzenfolio3.exceptions import APIError, HTTPError, ZenfolioError
-from pyzenfolio3.utils import convert_to_datetime
+#from pyzenfolio3.utils import convert_to_datetime
 from pyzenfolio3.validate import assert_type, validate_object, validate_value
 
 
