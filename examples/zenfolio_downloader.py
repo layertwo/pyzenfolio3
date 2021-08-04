@@ -1,6 +1,9 @@
 import argparse
 import os
-from typing import List
+import socket
+from typing import List, Dict
+
+import requests
 
 from pyzenfolio3 import PyZenfolio
 
@@ -8,15 +11,16 @@ from pyzenfolio3 import PyZenfolio
 class ZenfolioDownloader(PyZenfolio):
     """Zenfolio Downloader."""
 
-    def __init__(self, username, password, basepath):
+    def __init__(self, username: str, password: str, basepath: str, timeout: int) -> None:
         self.basepath = basepath
+        self.timeout = timeout
         super().__init__(username=username, password=password)
 
-    def get_photo_sets(self) -> List[dict]:
+    def get_photo_sets(self) -> List[Dict]:
         groups = self.load_group_hierarchy().get("Elements", [])
         return self.recurse_photo_sets(groups)
 
-    def recurse_photo_sets(self, elements: List) -> List[dict]:
+    def recurse_photo_sets(self, elements: List) -> List[Dict]:
         """Get PhotoSets from User.Elements
         Need to recurse as PhotoSets are nested.
         """
@@ -32,7 +36,7 @@ class ZenfolioDownloader(PyZenfolio):
 
         return photosets
 
-    def get_photo_set_details(self, _id=None) -> List[dict]:
+    def get_photo_set_details(self, _id=None) -> List[Dict]:
         """Get and add individual Photos to PhotoSet structure."""
         _break = False
         for s in self.get_photo_sets():
@@ -67,24 +71,28 @@ class ZenfolioDownloader(PyZenfolio):
 
         if not os.path.exists(path):
             print(f"downloading file {filename} / {directory} from {url}")
-            r = self.session.get(url, timeout=10)
+            try:
+                r = self.session.get(url, timeout=self.timeout)
+            except (socket.timeout, requests.exceptions.Timeout):
+                print(f"unable to download file {filename} / {directory} from {url}, timeout {self.timeout}")
+
             if r.ok:
                 print(f"saving file {filename} / {directory} to {path}")
                 with open(path, "wb") as fp:
                     fp.write(r.content)
-            else:
-                print(f"unable to download file {filename} / {directory} from {url}, timeout 10s")
         else:
             print(f"{filename} / {directory} already exists at {path}")
 
 
-def get_args():
+def get_args() -> argparse.Namespace:
     """Get args."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-u", "--username", required=True, type=str, help="Zenfolio username")
     parser.add_argument("-p", "--password", required=True, type=str, help="Zenfolio password")
     parser.add_argument("-b", "--base-path", default="photos",
                         help="root directory to store downloaded photos")
+    parser.add_argument("-t", "--timeout", type=int, default=30,
+                        help="Download request timeout")
     return parser.parse_args()
 
 
@@ -92,7 +100,7 @@ def main():
     """Main."""
     args = get_args()
 
-    z = ZenfolioDownloader(args.username, args.password, args.base_path)
+    z = ZenfolioDownloader(args.username, args.password, args.base_path, args.timeout)
     z.download_photos()
 
 

@@ -10,12 +10,11 @@ from datetime import datetime
 
 import requests
 
-from pyzenfolio.constants import (
+from pyzenfolio3.constants import (
     API_ENDPOINT,
     DEFAULT_OBJECTS,
 )
 from pyzenfolio3.exceptions import APIError, HTTPError, ZenfolioError
-#from pyzenfolio3.utils import convert_to_datetime
 from pyzenfolio3.validate import assert_type, validate_object, validate_value
 
 
@@ -386,7 +385,7 @@ class PyZenfolio:
 
         data = {'method': method,
                 'params': params,
-                'id': secrets.randbelow(0, 2 ** 16 - 1)}
+                'id': secrets.randbelow(2 ** 16 - 1)}
 
         try:
             request = self.session.post(self.api_endpoint,
