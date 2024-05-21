@@ -16,7 +16,7 @@ setup(
     keywords="zenfolio",
     url="https://github.com/layertwo/pyzenfolio3",
     packages=['pyzenfolio3'],
-    install_requires=['requests==2.25.1'],
+    install_requires=['requests==2.32.0'],
     classifiers=[
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
